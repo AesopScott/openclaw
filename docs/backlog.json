@@ -1,0 +1,96 @@
+{
+  "tasks": [
+    {
+      "number": 1,
+      "title": "Let's get the Open Claw product running.",
+      "description": "Deploy OpenClaw on a Linux VM, connect to Discord, and verify the AI responds to user messages.",
+      "category": "feature",
+      "priority": 100,
+      "impact": "standard",
+      "status": "planned",
+      "created_at": "2026-05-23",
+      "completed_at": null,
+      "dependencies": [],
+      "branch": null,
+      "pr_url": null,
+      "plan": "## Overview\n\nDeploy OpenClaw (personal AI assistant) on a Linux VM, configure Discord bot integration, and verify end-to-end messaging works.\n\n## Phases\n\n### Phase 1: Infrastructure & Prerequisites\n- Provision Linux VM with Node 24+, npm/pnpm/bun\n- Clone openclaw repo, install dependencies, create .env\n\n### Phase 2: Discord Bot Configuration\n- Register Discord bot application, obtain token\n- Configure OpenClaw with Discord token and channel ID\n\n### Phase 3: AI Model Integration\n- Obtain LLM provider API key (OpenAI, Anthropic, etc.)\n- Add credentials to .env\n\n### Phase 4: Launch and Verify\n- Start OpenClaw service\n- Test: user messages in Discord → AI responds within 5 seconds\n\n## Success Criteria\n- Linux VM has Node 24+ and openclaw installed\n- Discord bot registered and configured\n- OpenClaw service starts without errors\n- User can send messages in Discord and receive AI responses",
+      "objective": {
+        "statement": "Get OpenClaw running on a Linux VM, connected to Discord, such that users can send messages and receive AI responses.",
+        "successCriteria": [
+          "Linux VM provisioned with Node 24+ (or 22.16+), npm/pnpm/bun, git, and make",
+          "OpenClaw repository cloned and dependencies installed",
+          "Discord bot registered, token obtained, and configured in .env with DISCORD_TOKEN and channel settings",
+          "LLM provider API key obtained and configured in .env",
+          "OpenClaw service starts successfully (via 'openclaw onboard' or 'npm start')",
+          "End-to-end test passes: user sends message in Discord, OpenClaw responds within 5 seconds with coherent answer"
+        ],
+        "nonGoals": [
+          "Setting up multiple Discord servers or channels",
+          "Custom AI personality or fine-tuning",
+          "Production-grade logging or monitoring",
+          "Load testing or performance optimization"
+        ],
+        "proofMap": {
+          "Linux VM provisioned with Node 24+": 1,
+          "OpenClaw repository cloned and dependencies installed": 2,
+          "Discord bot registered and configured": 3,
+          "OpenClaw service starts successfully": 4,
+          "End-to-end test passes": 5
+        },
+        "stopConditions": []
+      },
+      "proofUnits": [
+        {
+          "number": 1,
+          "title": "Linux VM ready with Node and dependencies",
+          "expectedBehavior": "Node.js 24+ (or 22.16+) is installed and accessible; npm/pnpm/bun is available; system has required build tools.",
+          "proofType": "smoke-command",
+          "exactCommand": "node --version && npm --version && git --version",
+          "expectedInitialFailure": "Command not found (Node/npm not installed).",
+          "expectedPassingEvidence": "All three commands print version strings. Node is ≥ v22.16.0 or v24.x.x.",
+          "waiverGuidance": "N/A"
+        },
+        {
+          "number": 2,
+          "title": "OpenClaw cloned, dependencies installed, .env present",
+          "expectedBehavior": "Repository cloned; npm install completes without errors; .env exists with DISCORD_TOKEN and provider fields.",
+          "proofType": "smoke-command",
+          "exactCommand": "ls -la .env && npm test -- --listTests 2>/dev/null | head -1",
+          "expectedInitialFailure": ".env file does not exist or node_modules/ missing.",
+          "expectedPassingEvidence": ".env is readable; npm can list test files; no module not found errors.",
+          "waiverGuidance": "N/A"
+        },
+        {
+          "number": 3,
+          "title": "Discord bot registered and token obtained",
+          "expectedBehavior": "Discord bot created; token is valid alphanumeric string; bot invited to test server with permissions.",
+          "proofType": "manual-script",
+          "exactCommand": "1. Discord Developer Portal: Create app 'OpenClaw'\n2. Add Bot\n3. Copy token to .env as DISCORD_TOKEN=\n4. Set Scopes: bot, Permissions: Send/Read Messages\n5. Invite to test server\n6. Verify bot in member list",
+          "expectedInitialFailure": "Discord bot does not exist; no token.",
+          "expectedPassingEvidence": "Bot appears in server; token in .env (100+ chars).",
+          "waiverGuidance": "Manual—Discord token generation not CLI testable."
+        },
+        {
+          "number": 4,
+          "title": "OpenClaw service starts and connects to Discord",
+          "expectedBehavior": "npm start/openclaw onboard completes without error; logs show Discord connection success.",
+          "proofType": "smoke-command",
+          "exactCommand": "timeout 10 npm start 2>&1 | grep -iE 'discord|connected|listening'",
+          "expectedInitialFailure": "Service crashes with token/auth errors.",
+          "expectedPassingEvidence": "Logs include 'connected' or 'listening'; exit 0 or timeout after 10s.",
+          "waiverGuidance": "If openclaw onboard is interactive, run manually and confirm no errors."
+        },
+        {
+          "number": 5,
+          "title": "End-to-end: Discord message → AI response",
+          "expectedBehavior": "User sends message in Discord; within 5 seconds, OpenClaw responds with coherent answer.",
+          "proofType": "manual-script",
+          "exactCommand": "1. Service running (from unit 4)\n2. Discord: send 'Hello, what is 2+2?'\n3. Wait 5s for response\n4. Send 'Tell me a joke'\n5. Verify both responded coherently",
+          "expectedInitialFailure": "Bot silent; no response after 5s; service crashed.",
+          "expectedPassingEvidence": "Bot responds to both messages within 5s with coherent, relevant answers.",
+          "waiverGuidance": "Manual—Discord interaction cannot be fully automated."
+        }
+      ]
+    }
+  ]
+}
